@@ -21,15 +21,8 @@ Options -Indexes
 
 # Deny access to sensitive files
 <FilesMatch "\.(sql|md|json|env)$">
-    Order allow,deny
-    Deny from all
+    Require all denied
 </FilesMatch>
-
-# Allow access to specific directories
-<Directory "uploads">
-    Order allow,deny
-    Allow from all
-</Directory>
 
 # Default index file
 DirectoryIndex index.html index.php
