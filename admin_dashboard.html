@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Dashboard - Copperway Car Wash</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+.btn-primary { background-color: #005DA8; color: white; }
+.btn-secondary { border-color: #005DA8; color: #005DA8; }
+.status-badge { padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; }
+.status-pending { background-color: #FEF3C7; color: #92400E; }
+.status-confirmed { background-color: #D1FAE5; color: #065F46; }
+.status-progress { background-color: #DBEAFE; color: #1E40AF; }
+.status-completed { background-color: #D1FAE5; color: #065F46; }
+</style>
+</head>
+<body class="font-sans bg-gray-50">
+<!-- Header -->
+<header class="sticky top-0 bg-white shadow-md z-50">
+<div class="container mx-auto flex justify-between items-center p-4">
+<div class="text-2xl font-bold text-[#005DA8]">Admin Dashboard</div>
+<div class="flex items-center space-x-4">
+<span id="adminName" class="text-gray-700"></span>
+<button id="logoutBtn" class="btn-secondary px-4 py-2 rounded-lg">Logout</button>
+</div>
+</div>
+</header>
+
+<!-- Navigation Tabs -->
+<div class="bg-white shadow-md">
+<div class="container mx-auto px-4">
+<div class="flex space-x-8">
+<button id="tabPending" class="tab-btn py-4 px-4 border-b-2 border-[#005DA8] font-semibold text-[#005DA8]">Pending Payments</button>
+<button id="tabQueue" class="tab-btn py-4 px-4 border-b-2 border-transparent hover:text-[#005DA8]">Queue</button>
+<button id="tabAll" class="tab-btn py-4 px-4 border-b-2 border-transparent hover:text-[#005DA8]">All Bookings</button>
+</div>
+</div>
+</div>
+
+<!-- Content Area -->
+<div class="container mx-auto px-4 py-8">
+<!-- Pending Payments Tab -->
+<div id="pendingTab" class="tab-content">
+<h2 class="text-2xl font-bold text-gray-800 mb-6">Pending Payment Verification</h2>
+<div id="pendingPaymentsContainer" class="space-y-4">
+<!-- Pending payments will be loaded here -->
+</div>
+</div>
+
+<!-- Queue Tab -->
+<div id="queueTab" class="tab-content hidden">
+<h2 class="text-2xl font-bold text-gray-800 mb-6">Today's Queue</h2>
+<div class="bg-white p-4 rounded-lg shadow-md mb-4">
+<div class="flex items-center justify-between">
+<label class="text-sm font-medium text-gray-700">Date:</label>
+<input type="date" id="queueDate" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#005DA8]" value="<?php echo date('Y-m-d'); ?>">
+</div>
+</div>
+<div id="queueContainer" class="space-y-4">
+<!-- Queue items will be loaded here -->
+</div>
+</div>
+
+<!-- All Bookings Tab -->
+<div id="allTab" class="tab-content hidden">
+<h2 class="text-2xl font-bold text-gray-800 mb-6">All Bookings</h2>
+<div class="bg-white p-4 rounded-lg shadow-md mb-4">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">From Date:</label>
+<input type="date" id="fromDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-2">To Date:</label>
+<input type="date" id="toDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+</div>
+<div class="flex items-end">
+<button id="filterBookings" class="btn-primary px-6 py-2 rounded-lg">Filter</button>
+</div>
+</div>
+</div>
+<div id="allBookingsContainer" class="space-y-4">
+<!-- All bookings will be loaded here -->
+</div>
+</div>
+</div>
+
+<!-- Payment Verification Modal -->
+<div id="paymentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+<div class="bg-white p-8 rounded-lg max-w-md w-full mx-4">
+<h3 class="text-xl font-semibold text-gray-800 mb-4">Verify Payment</h3>
+<form id="verifyPaymentForm">
+<input type="hidden" id="modalBookingId">
+<div class="mb-4">
+<label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+<select id="paymentMethod" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#005DA8]" required>
+<option value="">Select...</option>
+<option value="Mobile Money">Mobile Money</option>
+<option value="Bank Transfer">Bank Transfer</option>
+<option value="Cash">Cash</option>
+</select>
+</div>
+<div class="mb-4">
+<label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+<textarea id="paymentNotes" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#005DA8]" rows="3"></textarea>
+</div>
+<div class="flex space-x-4">
+<button type="button" id="cancelVerify" class="btn-secondary px-6 py-3 rounded-lg">Cancel</button>
+<button type="submit" class="btn-primary px-6 py-3 rounded-lg">Verify Payment</button>
+</div>
+</form>
+</div>
+</div>
+
+<!-- Status Update Modal -->
+<div id="statusModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+<div class="bg-white p-8 rounded-lg max-w-md w-full mx-4">
+<h3 class="text-xl font-semibold text-gray-800 mb-4">Update Status</h3>
+<form id="updateStatusForm">
+<input type="hidden" id="statusBookingId">
+<div class="mb-4">
+<label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+<select id="newStatus" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#005DA8]" required>
+<option value="">Select...</option>
+<option value="in_queue">In Queue</option>
+<option value="in_progress">In Progress</option>
+<option value="completed">Completed</option>
+<option value="cancelled">Cancelled</option>
+</select>
+</div>
+<div class="mb-4">
+<label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+<textarea id="statusNotes" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#005DA8]" rows="3"></textarea>
+</div>
+<div class="flex space-x-4">
+<button type="button" id="cancelStatus" class="btn-secondary px-6 py-3 rounded-lg">Cancel</button>
+<button type="submit" class="btn-primary px-6 py-3 rounded-lg">Update Status</button>
+</div>
+</form>
+</div>
+</div>
+
+<script>
+let currentTab = 'pending';
+let refreshInterval = null;
+
+// Check authentication
+document.addEventListener('DOMContentLoaded', function() {
+const admin = sessionStorage.getItem('admin');
+if (!admin) {
+window.location.href = 'admin_login.html';
+return;
+}
+
+const adminData = JSON.parse(admin);
+document.getElementById('adminName').textContent = adminData.full_name;
+
+// Setup event listeners
+setupEventListeners();
+
+// Load initial data
+loadPendingPayments();
+
+// Setup auto-refresh
+refreshInterval = setInterval(refreshData, 30000); // Refresh every 30 seconds
+});
+
+function setupEventListeners() {
+// Tab switching
+document.getElementById('tabPending').addEventListener('click', () => switchTab('pending'));
+document.getElementById('tabQueue').addEventListener('click', () => switchTab('queue'));
+document.getElementById('tabAll').addEventListener('click', () => switchTab('all'));
+
+// Logout
+document.getElementById('logoutBtn').addEventListener('click', function() {
+sessionStorage.removeItem('admin');
+window.location.href = 'admin_login.html';
+});
+
+// Queue date change
+document.getElementById('queueDate').addEventListener('change', loadQueue);
+
+// Filter bookings
+document.getElementById('filterBookings').addEventListener('click', loadAllBookings);
+
+// Modal cancel buttons
+document.getElementById('cancelVerify').addEventListener('click', () => document.getElementById('paymentModal').classList.add('hidden'));
+document.getElementById('cancelStatus').addEventListener('click', () => document.getElementById('statusModal').classList.add('hidden'));
+
+// Form submissions
+document.getElementById('verifyPaymentForm').addEventListener('submit', verifyPayment);
+document.getElementById('updateStatusForm').addEventListener('submit', updateStatus);
+}
+
+function switchTab(tab) {
+currentTab = tab;
+document.querySelectorAll('.tab-btn').forEach(btn => {
+btn.classList.remove('border-[#005DA8]', 'text-[#005DA8]', 'font-semibold');
+btn.classList.add('border-transparent');
+});
+document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+
+if (tab === 'pending') {
+document.getElementById('tabPending').classList.add('border-[#005DA8]', 'text-[#005DA8]', 'font-semibold');
+document.getElementById('pendingTab').classList.remove('hidden');
+loadPendingPayments();
+} else if (tab === 'queue') {
+document.getElementById('tabQueue').classList.add('border-[#005DA8]', 'text-[#005DA8]', 'font-semibold');
+document.getElementById('queueTab').classList.remove('hidden');
+loadQueue();
+} else {
+document.getElementById('tabAll').classList.add('border-[#005DA8]', 'text-[#005DA8]', 'font-semibold');
+document.getElementById('allTab').classList.remove('hidden');
+loadAllBookings();
+}
+}
+
+function refreshData() {
+if (currentTab === 'pending') loadPendingPayments();
+else if (currentTab === 'queue') loadQueue();
+else loadAllBookings();
+}
+
+async function loadPendingPayments() {
+try {
+const response = await fetch('api/admin_pending_payments.php');
+const result = await response.json();
+if (result.success) {
+displayPendingPayments(result.data);
+}
+} catch (error) {
+console.error('Error loading pending payments:', error);
+}
+}
+
+function displayPendingPayments(bookings) {
+const container = document.getElementById('pendingPaymentsContainer');
+container.innerHTML = '';
+
+if (bookings.length === 0) {
+container.innerHTML = '<p class="text-gray-600">No pending payments</p>';
+return;
+}
+
+bookings.forEach(booking => {
+const card = document.createElement('div');
+card.className = 'bg-white p-6 rounded-lg shadow-md';
+card.innerHTML = `
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+<div>
+<p class="text-sm text-gray-600">Booking Number</p>
+<p class="font-semibold text-gray-800">${booking.booking_number}</p>
+</div>
+<div>
+<p class="text-sm text-gray-600">Customer</p>
+<p class="font-semibold text-gray-800">${booking.customer_name}</p>
+</div>
+<div>
+<p class="text-sm text-gray-600">Amount</p>
+<p class="font-semibold text-[#005DA8]">${booking.amount_formatted}</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+<div>
+<p class="text-sm text-gray-600">Service</p>
+<p class="font-semibold text-gray-800">${booking.service_name}</p>
+</div>
+<div>
+<p class="text-sm text-gray-600">Vehicle</p>
+<p class="font-semibold text-gray-800">${booking.vehicle_model} (${booking.vehicle_number_plate})</p>
+</div>
+</div>
+${booking.payment_screenshot ? `<div class="mb-4"><img src="${booking.payment_screenshot}" alt="Payment screenshot" class="max-w-full h-auto rounded-lg"></div>` : ''}
+<button onclick="openVerifyModal(${booking.id})" class="btn-primary px-6 py-3 rounded-lg">Verify Payment</button>
+`;
+container.appendChild(card);
+});
+}
+
+function openVerifyModal(bookingId) {
+document.getElementById('modalBookingId').value = bookingId;
+document.getElementById('paymentModal').classList.remove('hidden');
+}
+
+async function verifyPayment(e) {
+e.preventDefault();
+const bookingId = document.getElementById('modalBookingId').value;
+const paymentMethod = document.getElementById('paymentMethod').value;
+const notes = document.getElementById('paymentNotes').value;
+
+try {
+const response = await fetch('api/admin_verify_payment.php', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify({ booking_id: bookingId, payment_method: paymentMethod, notes })
+});
+
+const result = await response.json();
+if (result.success) {
+alert('Payment verified successfully!');
+document.getElementById('paymentModal').classList.add('hidden');
+loadPendingPayments();
+loadQueue();
+} else {
+alert('Error: ' + result.message);
+}
+} catch (error) {
+console.error('Error verifying payment:', error);
+alert('Failed to verify payment');
+}
+}
+
+async function loadQueue() {
+const date = document.getElementById('queueDate').value;
+try {
+const response = await fetch(`api/get_queue.php?date=${date}`);
+const result = await response.json();
+if (result.success) {
+displayQueue(result.data);
+}
+} catch (error) {
+console.error('Error loading queue:', error);
+}
+}
+
+function displayQueue(queue) {
+const container = document.getElementById('queueContainer');
+container.innerHTML = '';
+
+if (queue.length === 0) {
+container.innerHTML = '<p class="text-gray-600">No bookings in queue for this date</p>';
+return;
+}
+
+queue.forEach(booking => {
+const card = document.createElement('div');
+card.className = 'bg-white p-6 rounded-lg shadow-md';
+const statusBadge = getStatusBadge(booking.status);
+card.innerHTML = `
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-sm text-gray-600">Slot #${booking.slot_number}</p>
+<p class="text-2xl font-bold text-gray-800">${booking.booking_number}</p>
+</div>
+${statusBadge}
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+<div>
+<p class="text-sm text-gray-600">Customer</p>
+<p class="font-semibold text-gray-800">${booking.customer_name}</p>
+</div>
+<div>
+<p class="text-sm text-gray-600">Service</p>
+<p class="font-semibold text-gray-800">${booking.service_name}</p>
+</div>
+<div>
+<p class="text-sm text-gray-600">Vehicle</p>
+<p class="font-semibold text-gray-800">${booking.vehicle_model} (${booking.vehicle_number_plate})</p>
+</div>
+<div>
+<p class="text-sm text-gray-600">Time</p>
+<p class="font-semibold text-gray-800">${booking.scheduled_time}</p>
+</div>
+</div>
+${booking.pickup_required ? `<div class="mb-4"><p class="text-sm text-gray-600">Pickup: ${booking.pickup_address}</p></div>` : ''}
+<button onclick="openStatusModal(${booking.id})" class="btn-primary px-6 py-3 rounded-lg">Update Status</button>
+`;
+container.appendChild(card);
+});
+}
+
+function openStatusModal(bookingId) {
+document.getElementById('statusBookingId').value = bookingId;
+document.getElementById('statusModal').classList.remove('hidden');
+}
+
+async function updateStatus(e) {
+e.preventDefault();
+const bookingId = document.getElementById('statusBookingId').value;
+const status = document.getElementById('newStatus').value;
+const notes = document.getElementById('statusNotes').value;
+
+try {
+const response = await fetch('api/admin_update_status.php', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify({ booking_id: bookingId, status, notes })
+});
+
+const result = await response.json();
+if (result.success) {
+alert('Status updated successfully!');
+document.getElementById('statusModal').classList.add('hidden');
+loadQueue();
+} else {
+alert('Error: ' + result.message);
+}
+} catch (error) {
+console.error('Error updating status:', error);
+alert('Failed to update status');
+}
+}
+
+function getStatusBadge(status) {
+const badges = {
+'pending_payment': '<span class="status-badge status-pending">Pending Payment</span>',
+'payment_verified': '<span class="status-badge status-confirmed">Payment Verified</span>',
+'confirmed': '<span class="status-badge status-confirmed">Confirmed</span>',
+'in_queue': '<span class="status-badge status-progress">In Queue</span>',
+'in_progress': '<span class="status-badge status-progress">In Progress</span>',
+'completed': '<span class="status-badge status-completed">Completed</span>',
+'cancelled': '<span class="status-badge status-pending">Cancelled</span>'
+};
+return badges[status] || '<span class="status-badge status-pending">' + status + '</span>';
+}
+
+async function loadAllBookings() {
+// This would need a new API endpoint for fetching all bookings
+// For now, just show a message
+document.getElementById('allBookingsContainer').innerHTML = '<p class="text-gray-600">All bookings feature coming soon</p>';
+}
+</script>
+
+</body>
+</html>
+

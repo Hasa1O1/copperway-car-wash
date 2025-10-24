@@ -1,0 +1,34 @@
+# Sensitive configuration files
+config.php
+
+# Upload directories
+uploads/payment_screenshots/*
+!uploads/payment_screenshots/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Database dumps (optional - uncomment if you don't want to track database backups)
+# *.sql
+
+# Environment files
+.env
+.env.local
+
