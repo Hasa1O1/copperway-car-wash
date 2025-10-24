@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: copperway-car-wash
+    runtime: php
+    plan: free
+    buildCommand: ""
+    startCommand: php -S 0.0.0.0:$PORT
+    envVars:
+      - key: PHP_VERSION
+        value: 8.1
+      - key: DB_HOST
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASS
+        sync: false
+    healthCheckPath: /index.html
+
+databases:
+  - name: copperway-db
+    plan: free
+    databaseName: copperway_carwash
+    user: copperway_user
+
