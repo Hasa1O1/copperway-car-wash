@@ -1,0 +1,140 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  duration    Int      // Duration in minutes
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  bookings Booking[]
+
+  @@map("services")
+}
+
+model Booking {
+  id                      Int      @id @default(autoincrement())
+  bookingNumber           String   @unique @map("booking_number") @db.VarChar(20)
+  customerName            String   @map("customer_name") @db.VarChar(100)
+  customerPhone           String   @map("customer_phone") @db.VarChar(20)
+  customerEmail           String?  @map("customer_email") @db.VarChar(100)
+  vehicleModel            String   @map("vehicle_model") @db.VarChar(100)
+  vehicleNumberPlate      String   @map("vehicle_number_plate") @db.VarChar(20)
+  serviceId               Int      @map("service_id")
+  scheduledDate           DateTime @map("scheduled_date") @db.Date
+  scheduledTime           DateTime @map("scheduled_time") @db.Time
+  pickupRequired          Boolean  @default(false) @map("pickup_required")
+  pickupAddress           String?  @map("pickup_address")
+  dropoffAddress          String?  @map("dropoff_address")
+  status                  BookingStatus @default(PENDING_PAYMENT)
+  amount                  Decimal  @db.Decimal(10, 2)
+  paymentConfirmed        Boolean  @default(false) @map("payment_confirmed")
+  paymentMethod           String?  @map("payment_method") @db.VarChar(50)
+  paymentScreenshot       String?  @map("payment_screenshot") @db.VarChar(255)
+  paymentNotes            String?  @map("payment_notes")
+  slotNumber              Int?    @map("slot_number")
+  estimatedCompletionTime DateTime? @map("estimated_completion_time")
+  completedAt             DateTime? @map("completed_at")
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  service     Service        @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  queueHistory QueueHistory[]
+
+  @@index([bookingNumber], map: "idx_booking_number")
+  @@index([status], map: "idx_status")
+  @@index([scheduledDate], map: "idx_scheduled_date")
+  @@index([customerPhone], map: "idx_customer_phone")
+  @@map("bookings")
+}
+
+model AdminUser {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique @db.VarChar(50)
+  password  String   @db.VarChar(255) // Hashed password
+  fullName  String   @map("full_name") @db.VarChar(100)
+  email     String?  @db.VarChar(100)
+  role      UserRole @default(STAFF)
+  isActive  Boolean  @default(true) @map("is_active")
+  lastLogin DateTime? @map("last_login")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  queueHistory QueueHistory[]
+
+  @@map("admin_users")
+}
+
+model QueueHistory {
+  id           Int           @id @default(autoincrement())
+  bookingId    Int           @map("booking_id")
+  statusChange BookingStatus @map("status_change")
+  changedBy    Int?          @map("changed_by")
+  notes        String?
+  createdAt    DateTime      @default(now()) @map("created_at")
+
+  // Relations
+  booking   Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  adminUser AdminUser? @relation(fields: [changedBy], references: [id], onDelete: SetNull)
+
+  @@map("queue_history")
+}
+
+model BusinessHours {
+  id        Int      @id @default(autoincrement())
+  dayOfWeek Int      @map("day_of_week") // 0=Sunday, 1=Monday, etc.
+  openTime  DateTime @map("open_time") @db.Time
+  closeTime DateTime @map("close_time") @db.Time
+  isOpen    Boolean  @default(true) @map("is_open")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("business_hours")
+}
+
+model LocationSettings {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  address   String
+  latitude  Decimal? @db.Decimal(10, 8)
+  longitude Decimal? @db.Decimal(11, 8)
+  phone     String?  @db.VarChar(100)
+  email     String?  @db.VarChar(100)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("location_settings")
+}
+
+enum BookingStatus {
+  PENDING_PAYMENT
+  PAYMENT_VERIFIED
+  CONFIRMED
+  IN_QUEUE
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum UserRole {
+  ADMIN
+  STAFF
+  CUSTOMER_SERVICE
+}

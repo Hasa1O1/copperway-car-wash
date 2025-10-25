@@ -1,26 +1,29 @@
+version: 0.1
+
 services:
-  - type: web
+  web:
+    type: web
     name: copperway-car-wash
-    runtime: php
-    plan: free
-    buildCommand: ""
-    startCommand: php -S 0.0.0.0:$PORT
+    env: node
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npm start
     envVars:
-      - key: PHP_VERSION
-        value: 8.1
-      - key: DB_HOST
-        sync: false
-      - key: DB_NAME
-        sync: false
-      - key: DB_USER
-        sync: false
-      - key: DB_PASS
-        sync: false
-    healthCheckPath: /index.html
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: copperway-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NEXT_PUBLIC_APP_NAME
+        value: Copperway Car Wash
+      - key: NEXT_PUBLIC_TIMEZONE
+        value: Africa/Lusaka
 
-databases:
-  - name: copperway-db
-    plan: free
+  copperway-db:
+    type: pserv
+    name: copperway-db
+    plan: starter
     databaseName: copperway_carwash
-    user: copperway_user
-

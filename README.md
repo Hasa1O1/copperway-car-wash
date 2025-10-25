@@ -1,201 +1,261 @@
-# Copperway Car Wash - Booking System
+# Copperway Car Wash - Modern Booking System
 
-A comprehensive car wash booking and management system with offline payment verification, queue management, and admin dashboard.
+A comprehensive car wash booking and management system built with modern technologies.
 
-## Features
+## 🚀 Tech Stack
+
+- **Frontend**: Next.js 14 + React 18 + TypeScript
+- **Backend**: Node.js + Express + TypeScript (API Routes)
+- **Database**: PostgreSQL + Prisma ORM
+- **Styling**: Tailwind CSS
+- **Authentication**: JWT Tokens
+- **Deployment**: Vercel/Render + PostgreSQL
+
+## ✨ Features
 
 ### Customer Features
 - **Service Selection**: Choose from multiple car wash packages
-- **Booking System**: Select date and time slots
+- **Online Booking**: Multi-step booking form with real-time validation
+- **Time Slot Selection**: Dynamic availability checking
 - **Pickup Service**: Optional pickup and drop-off service
-- **Payment Confirmation**: Upload payment screenshots or contact support
 - **Status Tracking**: Real-time booking status updates
+- **Payment Integration**: Support for offline payment methods
 - **Navigation**: Google Maps integration for directions
 
 ### Admin Features
-- **Payment Verification**: Verify customer payments manually
-- **Queue Management**: View and manage service queue
-- **Status Updates**: Update booking statuses (in progress, completed, etc.)
-- **Dashboard**: Comprehensive admin dashboard with multiple views
-- **Booking History**: Track all bookings and customer records
+- **Secure Authentication**: JWT-based admin login system
+- **Payment Verification**: Manual payment verification dashboard
+- **Queue Management**: Real-time queue management system
+- **Status Updates**: Update booking statuses with notes
+- **Comprehensive Dashboard**: Multi-tab admin interface
+- **Booking History**: Complete booking records and analytics
 
-## Tech Stack
-
-- **Frontend**: HTML5, Tailwind CSS, JavaScript
-- **Backend**: PHP 7.4+
-- **Database**: MySQL 5.7+
-- **APIs**: RESTful API endpoints
-
-## Installation
+## 🛠️ Quick Start
 
 ### Prerequisites
-- PHP 7.4 or higher
-- MySQL 5.7 or higher
-- Apache/Nginx web server
-- PHP extensions: PDO, PDO_MySQL, GD (for image handling)
+- Node.js 18+ 
+- PostgreSQL database
+- npm or yarn
 
-### Step 1: Database Setup
+### Installation
 
-1. Create a MySQL database:
-```sql
-CREATE DATABASE copperway_carwash CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+1. **Clone and Install**
+   ```bash
+   git clone <repository-url>
+   cd copperway-car-wash
+   npm install
+   ```
+
+2. **Environment Setup**
+   ```bash
+   cp env.example .env.local
+   # Edit .env.local with your database URL and other settings
+   ```
+
+3. **Database Setup**
+   ```bash
+   # Generate Prisma client
+   npm run db:generate
+   
+   # Push schema to database
+   npm run db:push
+   
+   # Seed with initial data
+   npm run db:seed
+   ```
+
+4. **Start Development**
+   ```bash
+   npm run dev
+   ```
+
+Visit `http://localhost:3000`
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Create `.env.local` file:
+
+```env
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/copperway_carwash"
+
+# JWT Secret (generate a secure random string)
+JWT_SECRET="your-super-secret-jwt-key"
+
+# File Upload Settings
+UPLOAD_DIR="./uploads/payment_screenshots"
+MAX_FILE_SIZE=5242880
+
+# Application Settings
+NEXT_PUBLIC_APP_NAME="Copperway Car Wash"
+NEXT_PUBLIC_TIMEZONE="Africa/Lusaka"
+
+# Google Maps API (optional)
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY="your-google-maps-api-key"
 ```
 
-2. Import the database schema:
-```bash
-mysql -u root -p copperway_carwash < database.sql
-```
+### Default Admin Credentials
+- **Username**: `admin`
+- **Password**: `admin123`
 
-### Step 2: Configuration
+⚠️ **Change these credentials immediately after setup!**
 
-1. Edit `config.php` and update database credentials:
-```php
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'copperway_carwash');
-define('DB_USER', 'your_username');
-define('DB_PASS', 'your_password');
-```
+## 📱 Usage
 
-2. Update business hours in the database if needed:
-```sql
-UPDATE business_hours SET open_time = '08:00:00', close_time = '18:00:00' WHERE day_of_week = 1;
-```
+### Customer Booking Flow
 
-3. Update location settings:
-```sql
-UPDATE location_settings SET latitude = -12.8153, longitude = 28.2139 WHERE id = 1;
-```
+1. **Visit Homepage**: Browse services and pricing
+2. **Book Service**: Click "Book Now" to start booking process
+3. **Select Service**: Choose from available car wash packages
+4. **Choose Time**: Select date and available time slot
+5. **Vehicle Details**: Enter vehicle information and pickup preferences
+6. **Contact Info**: Provide contact details
+7. **Payment**: Complete booking and follow payment instructions
+8. **Track Status**: Use booking number to check status
 
-### Step 3: File Permissions
+### Admin Management
 
-Create upload directory and set permissions:
-```bash
-mkdir -p uploads/payment_screenshots
-chmod 755 uploads
-chmod 755 uploads/payment_screenshots
-```
+1. **Login**: Access admin dashboard at `/admin/login`
+2. **Pending Payments**: Verify customer payments
+3. **Queue Management**: Manage service queue and update statuses
+4. **Booking History**: View all bookings and customer records
 
-### Step 4: Web Server Configuration
+## 🗄️ Database Schema
 
-#### Apache (.htaccess)
-The `.htaccess` file is included for URL rewriting.
+### Core Tables
 
-#### Nginx
-Add this to your server block:
-```nginx
-location / {
-    try_files $uri $uri/ /index.html;
-}
-```
-
-### Step 5: Access the Application
-
-- **Main Website**: `http://localhost/copperway_carwash/index.html`
-- **Booking Page**: `http://localhost/copperway_carwash/booking.html`
-- **Status Check**: `http://localhost/copperway_carwash/status.html`
-- **Admin Login**: `http://localhost/copperway_carwash/admin_login.html`
-
-**Default Admin Credentials:**
-- Username: `admin`
-- Password: `admin123`
-
-⚠️ **Important**: Change the default password immediately after first login!
-
-## API Endpoints
-
-### Customer APIs
-- `GET api/get_services.php` - Get available services
-- `GET api/get_slots.php?date=YYYY-MM-DD` - Get available time slots
-- `POST api/create_booking.php` - Create new booking
-- `GET api/get_booking.php?booking_number=XXX&phone=YYY` - Get booking status
-- `POST api/upload_payment.php` - Upload payment screenshot
-
-### Admin APIs
-- `POST api/admin_login.php` - Admin authentication
-- `GET api/admin_pending_payments.php` - Get pending payments
-- `POST api/admin_verify_payment.php` - Verify payment
-- `POST api/admin_update_status.php` - Update booking status
-- `GET api/get_queue.php?date=YYYY-MM-DD` - Get queue for date
-
-## Database Schema
-
-### Main Tables
-- **services**: Available car wash services
-- **bookings**: Customer bookings with all details
-- **admin_users**: Admin user accounts
-- **queue_history**: Status change tracking
+- **services**: Available car wash services with pricing
+- **bookings**: Customer bookings with complete details
+- **admin_users**: Admin and staff accounts
+- **queue_history**: Status change tracking and audit log
 - **business_hours**: Operating hours configuration
-- **location_settings**: Car wash location details
+- **location_settings**: Car wash location and contact details
 
 ### Booking Status Flow
-1. `pending_payment` - Booking created, awaiting payment
-2. `payment_verified` - Payment confirmed by admin
-3. `confirmed` - Booking confirmed and added to queue
-4. `in_queue` - Waiting for service
-5. `in_progress` - Currently being serviced
-6. `completed` - Service finished
-7. `cancelled` - Booking cancelled
 
-## Customization
-
-### Adding New Services
-```sql
-INSERT INTO services (name, description, price, duration) VALUES
-('Full Service', 'Complete interior and exterior cleaning', 59.99, 90);
+```
+PENDING_PAYMENT → PAYMENT_VERIFIED → CONFIRMED → IN_QUEUE → IN_PROGRESS → COMPLETED
+                                    ↓
+                                CANCELLED
 ```
 
-### Changing Business Hours
-```sql
-UPDATE business_hours SET open_time = '09:00:00', close_time = '19:00:00' WHERE day_of_week = 1;
+## 🚀 Deployment
+
+### Vercel (Recommended)
+
+1. **Connect Repository**
+   ```bash
+   npm i -g vercel
+   vercel
+   ```
+
+2. **Environment Variables**
+   - Add all environment variables in Vercel dashboard
+   - Use production database URL
+
+3. **Database Migration**
+   ```bash
+   npx prisma migrate deploy
+   npx prisma db seed
+   ```
+
+### Render
+
+1. **Create Services**
+   - Web Service (Next.js)
+   - PostgreSQL Database
+
+2. **Deploy**
+   - Connect GitHub repository
+   - Use provided `render.yaml` configuration
+   - Set environment variables
+
+## 🔄 API Endpoints
+
+### Customer APIs
+- `GET /api/services` - Get available services
+- `GET /api/slots?date=YYYY-MM-DD&serviceId=123` - Get available time slots
+- `POST /api/bookings` - Create new booking
+- `GET /api/bookings/search?bookingNumber=XXX&phone=YYY` - Get booking status
+
+### Admin APIs
+- `POST /api/admin/login` - Admin authentication
+- `GET /api/admin/pending-payments` - Get pending payments
+- `POST /api/admin/verify-payment` - Verify payment
+- `POST /api/admin/update-status` - Update booking status
+- `GET /api/admin/queue?date=YYYY-MM-DD` - Get queue for date
+
+## 🧪 Development
+
+### Available Scripts
+
+```bash
+# Development
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+
+# Database
+npm run db:generate  # Generate Prisma client
+npm run db:push      # Push schema changes
+npm run db:migrate   # Run migrations
+npm run db:seed      # Seed database
+
+# Code Quality
+npm run lint         # Run ESLint
+npm run type-check   # TypeScript type checking
 ```
 
-### Updating Location
-```sql
-UPDATE location_settings SET address = 'New Address', latitude = -12.8153, longitude = 28.2139 WHERE id = 1;
+### Project Structure
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── api/                # API Routes
+│   ├── admin/              # Admin pages
+│   ├── booking/            # Booking page
+│   ├── status/             # Status page
+│   └── page.tsx            # Home page
+├── lib/                    # Utilities
+│   ├── prisma.ts          # Database client
+│   ├── auth.ts            # Authentication
+│   └── utils.ts           # Helper functions
+└── types/                  # TypeScript types
 ```
 
-## Payment Methods
+## 🔐 Security Features
 
-The system supports offline payment methods:
-- Mobile Money
-- Bank Transfer
-- Cash Payment
+- **JWT Authentication**: Secure admin authentication
+- **Input Validation**: Comprehensive input sanitization
+- **SQL Injection Prevention**: Prisma ORM with prepared statements
+- **XSS Protection**: React's built-in XSS protection
+- **Rate Limiting**: API rate limiting (configurable)
+- **Environment Variables**: Secure configuration management
 
-Customers can upload payment screenshots or contact support for verification.
-
-## Security Notes
-
-1. **Change Default Passwords**: Update admin passwords immediately
-2. **File Uploads**: Validate and sanitize uploaded files
-3. **SQL Injection**: Uses prepared statements (PDO)
-4. **XSS Protection**: Input sanitization in place
-5. **Session Security**: Configure secure session settings
-6. **HTTPS**: Use SSL/TLS in production
-
-## Troubleshooting
-
-### Database Connection Error
-- Check database credentials in `config.php`
-- Verify MySQL service is running
-- Ensure database exists
-
-### File Upload Not Working
-- Check directory permissions (`chmod 755 uploads`)
-- Verify PHP upload settings in `php.ini`
-- Check `MAX_FILE_SIZE` constant in `config.php`
-
-### Booking Not Appearing
-- Check database for booking records
-- Verify API endpoints are accessible
-- Check browser console for JavaScript errors
-
-## Support
+## 📞 Support
 
 For issues or questions:
-- Email: contact@copperwaywash.com
-- Phone: +260 123 456789
+- **Email**: contact@copperwaywash.com
+- **Phone**: +260 123 456789
+- **Location**: Kitwe, Zambia
 
-## License
+## 📄 License
 
 © 2025 Copperway Car Wash. All rights reserved.
 
+---
+
+## 🔄 Migration from PHP/MySQL
+
+This system represents a complete migration from the original PHP/MySQL implementation to a modern tech stack. Key improvements include:
+
+- **Better Performance**: Next.js SSR/SSG capabilities
+- **Type Safety**: Full TypeScript implementation
+- **Modern UI**: React components with Tailwind CSS
+- **Better Security**: JWT authentication and modern security practices
+- **Scalability**: PostgreSQL with Prisma ORM
+- **Developer Experience**: Modern tooling and development workflow
+
+See `MIGRATION_GUIDE.md` for detailed migration instructions.
