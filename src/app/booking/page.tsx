@@ -217,26 +217,40 @@ export default function BookingPage() {
         {currentStep === 1 && (
           <div className="bg-white p-8 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold text-gray-800 mb-6">1. Select Service</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {services.map((service) => (
-                <div
-                  key={service.id}
-                  className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
-                    selectedService?.id === service.id
-                      ? 'border-primary bg-blue-50'
-                      : 'border-gray-200 hover:border-primary'
-                  }`}
-                  onClick={() => handleServiceSelect(service)}
-                >
-                  <h3 className="font-semibold text-gray-800">{service.name}</h3>
-                  <p className="text-gray-600 text-sm mb-2">{service.description}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-bold text-primary">${service.price.toFixed(2)}</span>
-                    <span className="text-gray-500">{service.duration} min</span>
-                  </div>
-                </div>
-              ))}
+            
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Choose a Service *</label>
+              <select
+                value={selectedService?.id || ''}
+                onChange={(e) => {
+                  const serviceId = parseInt(e.target.value);
+                  const service = services.find(s => s.id === serviceId);
+                  if (service) {
+                    handleServiceSelect(service);
+                  }
+                }}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              >
+                <option value="">-- Select a service --</option>
+                {services.map((service) => (
+                  <option key={service.id} value={service.id}>
+                    {service.name} - K{service.price.toFixed(2)} ({service.duration} min)
+                  </option>
+                ))}
+              </select>
             </div>
+
+            {selectedService && (
+              <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <h3 className="font-semibold text-gray-800 mb-2">{selectedService.name}</h3>
+                <p className="text-gray-600 text-sm mb-2">{selectedService.description}</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-bold text-primary">K{selectedService.price.toFixed(2)}</span>
+                  <span className="text-gray-500">{selectedService.duration} min</span>
+                </div>
+              </div>
+            )}
+
             <div className="mt-6">
               <button
                 onClick={nextStep}
@@ -426,12 +440,12 @@ export default function BookingPage() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span>Service: {selectedService?.name}</span>
-                  <span>${selectedService?.price.toFixed(2)}</span>
+                  <span>K{selectedService?.price.toFixed(2)}</span>
                 </div>
                 <div className="border-t pt-3">
                   <div className="flex justify-between font-semibold text-lg">
                     <span>Total Amount:</span>
-                    <span className="text-primary">${selectedService?.price.toFixed(2)}</span>
+                    <span className="text-primary">K{selectedService?.price.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
