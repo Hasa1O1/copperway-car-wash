@@ -439,8 +439,9 @@ export default function BookingPage() {
               <div className="mt-4 p-4 bg-blue-50 rounded-lg">
                 <h4 className="font-semibold text-blue-800 mb-2">Payment Methods:</h4>
                 <ul className="text-sm text-blue-700 space-y-1">
-                  <li>• Mobile Money: +260 123 456789</li>
-                  <li>• Bank Transfer: Available on request</li>
+                  <li>• Mobile Money: 0974323234</li>
+                  <li>• WhatsApp: +26076977857</li>
+                  <li>• Supervisor: +260972297220</li>
                   <li>• Cash Payment: At location</li>
                 </ul>
                 <p className="text-sm text-blue-600 mt-2">

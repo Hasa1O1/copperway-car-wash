@@ -83,6 +83,14 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
     }
 
     // Create booking
+    // Parse scheduledDate properly
+    const bookingDate = new Date(scheduledDate);
+    
+    // Parse scheduledTime - it's already in HH:mm format
+    // Store just the time component by creating a Date with epoch date
+    const [hours, minutes] = scheduledTime.split(':');
+    const bookingTime = new Date(1970, 0, 1, parseInt(hours), parseInt(minutes), 0, 0);
+    
     const booking = await prisma.booking.create({
       data: {
         bookingNumber,
@@ -92,9 +100,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
         vehicleModel: sanitizeInput(vehicleModel),
         vehicleNumberPlate: sanitizeInput(vehicleNumberPlate),
         serviceId,
-        scheduledDate: new Date(scheduledDate),
-        scheduledTime: new Date(`1970-01-01T${scheduledTime}:00Z`),
-        pickupRequired,
+        scheduledDate: bookingDate,
+        scheduledTime: bookingTime,
+        pickupRequired: pickupRequired || false,
         pickupAddress: pickupAddress ? sanitizeInput(pickupAddress) : null,
         dropoffAddress: dropoffAddress ? sanitizeInput(dropoffAddress) : null,
         amount: service.price,

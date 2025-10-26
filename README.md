@@ -47,6 +47,17 @@ A comprehensive car wash booking and management system built with modern technol
    ```
 
 2. **Environment Setup**
+   Copy `.env.local` to `.env` and configure:
+   ```bash
+   cp env.local .env
+   ```
+
+   Update `DATABASE_URL` with your Supabase or PostgreSQL connection string:
+   ```
+   DATABASE_URL="postgresql://..."
+   ```
+
+3. **Database Setup**
    ```bash
    cp env.example .env.local
    # Edit .env.local with your database URL and other settings

@@ -94,7 +94,15 @@ export function getAvailableTimeSlots(
     if (slotEndTime <= endTime) {
       // Check if slot conflicts with existing bookings
       const hasConflict = existingBookings.some(booking => {
-        const bookingStart = new Date(booking.scheduledTime);
+        // Extract just the time portion from the scheduled time
+        const bookingTime = new Date(booking.scheduledTime);
+        const bookingHours = bookingTime.getHours();
+        const bookingMinutes = bookingTime.getMinutes();
+        
+        // Create a proper Date object for comparison using the same date as the booking
+        const bookingStart = new Date(booking.scheduledDate);
+        bookingStart.setHours(bookingHours, bookingMinutes, 0, 0);
+        
         const bookingEnd = addMinutes(bookingStart, booking.service.duration);
         
         return isWithinInterval(time, { start: bookingStart, end: bookingEnd }) ||
