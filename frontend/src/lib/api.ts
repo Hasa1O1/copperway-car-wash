@@ -1,7 +1,10 @@
 import axios from 'axios';
 import type { Service, Booking, CreateBookingRequest, ApiResponse } from '../types';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// In production, use relative URL (same server). In development, use VITE_API_URL or localhost
+const API_URL = import.meta.env.PROD 
+  ? '/api' 
+  : (import.meta.env.VITE_API_URL || 'http://localhost:5000/api');
 
 const api = axios.create({
   baseURL: API_URL,

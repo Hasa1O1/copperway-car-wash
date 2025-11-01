@@ -1,224 +1,238 @@
-# Copperway Car Wash Booking System
+# Copperway Car Wash - Modern Booking System
 
-Modern car wash booking system built with React, Express.js, TypeScript, PostgreSQL, and Socket.io.
+A comprehensive car wash booking and management system with real-time updates, built with modern technologies.
 
-## Tech Stack
+## 🚀 Tech Stack
 
 ### Frontend
-- **React.js** - Component-based UI library
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Utility-first CSS framework
-- **Vite** - Fast build tool and dev server
+- **React 18** with TypeScript
+- **Vite** - Fast build tool
 - **React Router** - Client-side routing
+- **Tailwind CSS** - Styling
 - **Socket.io Client** - Real-time updates
-- **Google Maps API** - Location selection
+- **Axios** - API requests
+- **Google Maps Integration** - Location services
 
 ### Backend
-- **Node.js** - JavaScript runtime
-- **Express.js** - Web framework
-- **TypeScript** - Type safety
-- **PostgreSQL** - Relational database
-- **Socket.io** - Real-time bidirectional communication
-- **JWT** - Authentication tokens
-- **bcrypt** - Password hashing
+- **Node.js** + **Express** + **TypeScript**
+- **PostgreSQL** - Database
+- **Drizzle ORM** - Type-safe database queries
+- **Socket.io** - Real-time communication
+- **JWT** - Authentication
+- **Bcrypt** - Password hashing
+- **Multer** - File uploads
 
-## Features
+## ✨ Features
 
 ### Customer Features
-- ✅ **Multi-step Booking System** - Easy booking process with service selection, date/time slot picking, and customer information
-- ✅ **Offline Payment Workflow** - Support for mobile money, bank transfer, and cash payments with verification process
-- ✅ **Pickup & Delivery Options** - Choose between bringing car or requesting pickup service
-- ✅ **Google Maps Integration** - Pickup/dropoff location selection with drag-and-drop markers
-- ✅ **Location Navigation** - Get Google Maps directions to car wash location
-- ✅ **Booking Status Tracking** - Real-time status updates via Socket.io
-- ✅ **Mobile-Responsive Design** - Works perfectly on all devices
+- 🚗 **Service Selection**: Multiple car wash packages
+- 📅 **Online Booking**: Multi-step booking form with validation
+- ⏰ **Time Slot Selection**: Dynamic availability checking
+- 🚖 **Pickup Service**: Optional pickup and drop-off
+- 📊 **Status Tracking**: Real-time booking status updates
+- 💳 **Payment Integration**: Offline payment support
+- 🗺️ **Navigation**: Google Maps integration
 
 ### Admin Features
-- ✅ **Comprehensive Dashboard** - Monitor all aspects of business operations
-- ✅ **Payment Verification** - Manually verify offline payments and convert bookings to confirmed slots
-- ✅ **Real-time Queue Management** - Live queue updates with auto-refresh
-- ✅ **Record Keeping System** - Track customer history, service records, and maintain detailed logs
-- ✅ **Statistics & Analytics** - View overall stats, daily statistics, revenue tracking
-- ✅ **Customer History** - Track repeat customers and their service history
-- ✅ **Service Records** - Detailed record of all completed services
-- ✅ **Business Hours Management** - Flexible scheduling system
-- ✅ **JWT Authentication** - Secure admin access with role-based permissions
-- ✅ **Socket.io Real-time Updates** - Instant notifications and queue updates
+- 🔐 **Secure Authentication**: JWT-based login
+- ✅ **Payment Verification**: Manual payment verification dashboard
+- 📋 **Queue Management**: Real-time queue management
+- 🔄 **Status Updates**: Update booking statuses with notes
+- 📊 **Comprehensive Dashboard**: Multi-tab admin interface
+- 📈 **Analytics**: Booking history and statistics
 
-## Prerequisites
+## 🛠️ Quick Start
 
-- Node.js 18+ and npm
+### Prerequisites
+- Node.js 18+
 - PostgreSQL database
-- Google Maps API key (for location picker)
+- npm or yarn
 
-## Setup Instructions
+### Local Development Setup
 
-### 1. Clone and Install Dependencies
-
+1. **Clone the repository**
 ```bash
-# Install root dependencies
-npm install
-
-# Install frontend and backend dependencies
-npm run install:all
+git clone https://github.com/Hasa1O1/copperway-car-wash.git
+cd copperway-car-wash
 ```
 
-### 2. Database Setup
-
-1. Create a PostgreSQL database:
-```sql
-CREATE DATABASE copperway_carwash;
-```
-
-2. Update `backend/.env` with your database credentials:
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=copperway_carwash
-DB_USER=postgres
-DB_PASSWORD=your_password
-```
-
-The database schema will be automatically created on first run.
-
-### 3. Environment Variables
-
-**Backend** (`backend/.env`):
-```env
-PORT=5000
-NODE_ENV=development
-FRONTEND_URL=http://localhost:3000
-
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=copperway_carwash
-DB_USER=postgres
-DB_PASSWORD=
-
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-JWT_EXPIRES_IN=7d
-
-GOOGLE_MAPS_API_KEY=your-google-maps-api-key
-```
-
-**Frontend** (`frontend/.env`):
-```env
-VITE_API_URL=http://localhost:5000/api
-VITE_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
-```
-
-### 4. Seed Admin User
-
-Run the seed script to set up admin credentials:
+2. **Setup Backend**
 ```bash
 cd backend
-npm run seed
-```
-
-Default credentials:
-- Username: `admin`
-- Password: `admin123`
-
-**⚠️ Important:** Change the default password in production!
-
-### 5. Start Development Servers
-
-```bash
-# Start both frontend and backend
+npm install
+cp .env.example .env
+# Edit .env with your database credentials
 npm run dev
-
-# Or start individually:
-npm run dev:frontend  # Frontend on http://localhost:3000
-npm run dev:backend   # Backend on http://localhost:5000
 ```
 
-## Project Structure
+3. **Setup Frontend**
+```bash
+cd frontend
+npm install
+cp .env.example .env
+# Edit .env if needed
+npm run dev
+```
+
+4. **Initialize Database**
+```bash
+cd backend
+npm run db:push   # Create tables
+npm run seed      # Seed initial data
+```
+
+5. **Access the application**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:5000
+- Health Check: http://localhost:5000/api/health
+
+### Default Admin Credentials
+- **Username**: `admin`
+- **Password**: `admin123`
+
+⚠️ **Change these credentials immediately after first login!**
+
+## 🐳 Docker Deployment
+
+### Using Docker Compose (Recommended for local testing)
+```bash
+docker-compose up -d
+```
+
+This will start:
+- PostgreSQL database
+- Backend + Frontend server
+- All services configured and ready
+
+### Building Docker Image
+```bash
+docker build -t copperway-car-wash .
+```
+
+## 🚀 Deployment
+
+### Render Deployment
+
+1. **Connect your GitHub repository** to Render
+2. **Render will automatically detect** the `render.yaml` configuration
+3. **Set environment variables** in Render dashboard:
+   - `DATABASE_URL`: Your PostgreSQL connection string
+   - `JWT_SECRET`: A secure random string
+   - `NODE_ENV`: `production`
+
+4. **Deploy**: Render will build and deploy automatically
+
+### Environment Variables
+
+#### Backend
+```env
+NODE_ENV=production
+PORT=5000
+DATABASE_URL=postgresql://user:password@host:5432/database
+JWT_SECRET=your-secure-jwt-secret
+FRONTEND_URL=https://your-domain.com
+```
+
+#### Frontend
+```env
+VITE_API_URL=/api  # In production, uses relative URL
+VITE_GOOGLE_MAPS_API_KEY=your-api-key
+```
+
+## 📁 Project Structure
 
 ```
-.
-├── frontend/           # React frontend application
+copperway-car-wash/
+├── backend/                 # Backend server
 │   ├── src/
-│   │   ├── components/    # Reusable components
-│   │   ├── pages/          # Page components
-│   │   ├── lib/            # API client and utilities
-│   │   ├── types/          # TypeScript type definitions
-│   │   └── App.tsx         # Main app component
-│   └── package.json
-│
-├── backend/           # Express.js backend API
-│   ├── src/
-│   │   ├── config/         # Database and config
+│   │   ├── config/         # Database and configuration
 │   │   ├── routes/         # API routes
 │   │   ├── middleware/     # Auth middleware
-│   │   ├── socket/         # Socket.io handlers
+│   │   ├── socket/         # WebSocket handlers
 │   │   └── index.ts        # Server entry point
-│   └── package.json
-│
-└── package.json       # Root package.json (workspaces)
+│   ├── package.json
+│   └── tsconfig.json
+├── frontend/                # React frontend
+│   ├── src/
+│   │   ├── components/     # Reusable components
+│   │   ├── pages/          # Page components
+│   │   ├── lib/           # API and utilities
+│   │   └── types/         # TypeScript types
+│   ├── package.json
+│   └── vite.config.ts
+├── Dockerfile              # Multi-stage Docker build
+├── docker-compose.yml      # Local development with Docker
+└── render.yaml            # Render deployment config
 ```
 
-## API Endpoints
+## 🔄 API Endpoints
 
-### Public
-- `GET /api/services` - Get all active services
-- `GET /api/slots?date=&serviceId=` - Get available time slots
-- `POST /api/bookings` - Create a new booking
-- `GET /api/bookings/search?bookingNumber=&phone=` - Search for booking
+### Public APIs
+- `GET /api/health` - Health check
+- `GET /api/services` - Get available services
+- `GET /api/slots?date=YYYY-MM-DD&serviceId=123` - Get available time slots
+- `POST /api/bookings` - Create new booking
+- `GET /api/bookings/search?bookingNumber=XXX&phone=YYY` - Search booking
 
-### Admin (Requires Authentication)
+### Admin APIs (Require Authentication)
 - `POST /api/auth/login` - Admin login
 - `GET /api/admin/pending-payments` - Get pending payments
 - `POST /api/admin/verify-payment` - Verify payment
-- `GET /api/admin/queue` - Get queue
 - `PUT /api/admin/update-status` - Update booking status
-
-### Records & Statistics
-- `GET /api/admin/records/customers` - Get customer history
-- `GET /api/admin/records/services` - Get service records
-- `GET /api/admin/records/customer/:phone` - Get records for specific customer
-- `GET /api/admin/stats/daily?days=30` - Get daily statistics
+- `GET /api/admin/queue` - Get current queue
 - `GET /api/admin/stats/overall` - Get overall statistics
+- `GET /api/admin/records/customers` - Get customer records
 
-### Location
-- `GET /api/slots/location` - Get car wash location details
+## 🧪 Development Scripts
 
-## Database Schema
-
-The system uses the following main tables:
-
-- **services** - Available car wash services with pricing
-- **bookings** - Customer bookings with all details
-- **admin_users** - Admin/staff authentication
-- **queue_history** - Audit trail of booking status changes
-- **business_hours** - Operating hours configuration
-- **location_settings** - Car wash location details
-
-### Views for Reporting
-- **customer_history** - Customer visit and spending statistics
-- **service_records** - Detailed completed service records
-- **daily_stats** - Daily business metrics
-
-## Production Build
-
+### Backend
 ```bash
-# Build both frontend and backend
-npm run build
-
-# Start production servers
-cd backend && npm start
-cd frontend && npm run preview
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run db:push      # Push schema changes to database
+npm run seed         # Seed database with initial data
 ```
 
-## Security Notes
+### Frontend
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run lint         # Run ESLint
+```
 
-1. Change default admin password
-2. Use strong JWT_SECRET in production
-3. Enable HTTPS in production
-4. Set proper CORS origins
-5. Implement rate limiting (already included)
-6. Sanitize user inputs (use Joi validation)
+## 🔐 Security Features
 
-## License
+- ✅ JWT-based authentication
+- ✅ Password hashing with bcrypt
+- ✅ SQL injection prevention (prepared statements)
+- ✅ XSS protection (React + Helmet)
+- ✅ CORS configuration
+- ✅ Input validation
+- ✅ Secure file uploads
 
-MIT
+## 📞 Support
 
+For issues or questions:
+- **Email**: contact@copperwaywash.com
+- **GitHub Issues**: [Create an issue](https://github.com/Hasa1O1/copperway-car-wash/issues)
+- **Location**: Kitwe, Zambia
+
+## 📄 License
+
+© 2025 Copperway Car Wash. All rights reserved.
+
+## 🙏 Acknowledgments
+
+Built with ❤️ using modern web technologies:
+- React
+- Express
+- PostgreSQL
+- TypeScript
+- Tailwind CSS
+- Socket.io
+
+---
+
+**Note**: This project has been restructured from a PHP/MySQL implementation to a modern TypeScript stack for better performance, type safety, and developer experience.
