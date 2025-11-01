@@ -1,54 +1,23 @@
 {
   "name": "copperway-car-wash",
   "version": "1.0.0",
-  "description": "Modern car wash booking system built with Next.js, Node.js, and PostgreSQL",
+  "description": "Modern car wash booking system",
   "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "type-check": "tsc --noEmit",
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
-    "db:seed": "tsx prisma/seed.ts",
-    "server:dev": "tsx watch server/index.ts",
-    "server:build": "tsc -p server/tsconfig.json",
-    "server:start": "node server/dist/index.js"
-  },
-  "dependencies": {
-    "next": "^14.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@prisma/client": "^5.6.0",
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.5-lts.1",
-    "cors": "^2.8.5",
-    "helmet": "^7.1.0",
-    "express-rate-limit": "^7.1.5",
-    "joi": "^17.11.0",
-    "date-fns": "^2.30.0",
-    "uuid": "^9.0.1"
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install"
   },
   "devDependencies": {
-    "@types/node": "^20.8.0",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/jsonwebtoken": "^9.0.5",
-    "@types/multer": "^1.4.11",
-    "@types/cors": "^2.8.17",
-    "@types/uuid": "^9.0.7",
-    "typescript": "^5.2.0",
-    "tailwindcss": "^3.3.0",
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.31",
-    "eslint": "^8.51.0",
-    "eslint-config-next": "^14.0.0",
-    "prisma": "^5.6.0",
-    "tsx": "^4.1.0"
+    "concurrently": "^8.2.2"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -1,148 +1,240 @@
-# Copperway Car Wash - Setup Guide
+# Copperway Car Wash - Complete Setup Guide
 
-## Quick Start Guide
+## Quick Start
 
-This guide will help you set up the Copperway Car Wash booking system step by step.
+### Prerequisites
+- Node.js 18 or higher
+- PostgreSQL database installed and running
+- Google Maps API key (optional, for location picker)
 
-## Step 1: Install Requirements
+### Step 1: Clone and Install
 
-Make sure you have:
-- PHP 7.4 or higher
-- MySQL 5.7 or higher
-- Apache/Nginx web server
-- PHP extensions: PDO, PDO_MySQL
-
-## Step 2: Setup Database
-
-1. Open MySQL command line or phpMyAdmin
-2. Create the database:
-```sql
-CREATE DATABASE copperway_carwash CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
-3. Import the schema:
 ```bash
-mysql -u root -p copperway_carwash < database.sql
+# Clone the repository
+cd "C:\Users\Emmanuel Hasalama\Documents\Programming\Copperway car wash"
+
+# Install all dependencies
+npm run install:all
 ```
 
-Or use phpMyAdmin to import `database.sql`
+### Step 2: Setup Database
 
-## Step 3: Configure Database Connection
-
-Edit `config.php` and update these lines:
-```php
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'copperway_carwash');
-define('DB_USER', 'your_username');
-define('DB_PASS', 'your_password');
+1. Create PostgreSQL database:
+```sql
+CREATE DATABASE copperway_carwash;
 ```
 
-## Step 4: Create Upload Directory
+2. Create `.env` file in `backend/` directory:
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=copperway_carwash
+DB_USER=postgres
+DB_PASSWORD=your_postgres_password
 
-Create the uploads directory:
+PORT=5000
+NODE_ENV=development
+JWT_SECRET=change-this-to-a-random-secret-in-production
+JWT_EXPIRES_IN=7d
+FRONTEND_URL=http://localhost:3000
+```
+
+3. Create `.env` file in `frontend/` directory:
+```env
+VITE_API_URL=http://localhost:5000/api
+VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
+```
+
+### Step 3: Run Database Setup
+
+The database schema will be automatically created when you start the backend for the first time.
+
+To seed the database with default data:
 ```bash
-mkdir -p uploads/payment_screenshots
-chmod 755 uploads
-chmod 755 uploads/payment_screenshots
+cd backend
+npm run seed
 ```
 
-## Step 5: Access the Application
+This creates:
+- Default services (Saloon, SUV, Van, Carpet)
+- Admin user (username: `admin`, password: `admin123`)
+- Business hours (7 AM - 7 PM, all days)
+- Location settings (Kitwe, Zambia)
 
-Open your web browser and navigate to:
-- Main Website: `http://localhost/copperway_carwash/index.html`
-- Booking Page: `http://localhost/copperway_carwash/booking.html`
-- Admin Login: `http://localhost/copperway_carwash/admin_login.html`
+### Step 4: Start Development Servers
 
-## Default Login Credentials
-
-**Admin Login:**
-- Username: `admin`
-- Password: `admin123`
-
-⚠️ **IMPORTANT**: Change this password immediately after first login!
-
-## Testing the System
-
-### 1. Test Customer Booking Flow
-
-1. Go to `booking.html`
-2. Select a service
-3. Fill in vehicle details
-4. Choose date and time
-5. Enter contact information
-6. Submit booking
-7. Note your booking number
-8. Upload payment screenshot or contact support
-
-### 2. Test Admin Verification
-
-1. Login to admin dashboard
-2. Go to "Pending Payments" tab
-3. Find the booking you just created
-4. Click "Verify Payment"
-5. Select payment method and add notes
-6. Click "Verify Payment"
-7. Booking should move to "Queue" tab
-
-### 3. Test Status Tracking
-
-1. Go to `status.html`
-2. Enter booking number and phone
-3. Click "Check Status"
-4. You should see booking details and status
-
-## Customization
-
-### Change Business Hours
-
-Edit in database:
-```sql
-UPDATE business_hours SET open_time = '09:00:00', close_time = '19:00:00' WHERE day_of_week = 1;
+```bash
+# From root directory
+npm run dev
 ```
 
-### Update Location
+This starts:
+- Frontend: http://localhost:5173 (Vite default)
+- Backend: http://localhost:5000
 
-Edit in database:
-```sql
-UPDATE location_settings SET address = 'Your Address', latitude = -12.8153, longitude = 28.2139 WHERE id = 1;
+Or start individually:
+```bash
+npm run dev:frontend
+npm run dev:backend
 ```
 
-### Add New Services
+## Features Implemented
 
-```sql
-INSERT INTO services (name, description, price, duration) VALUES
-('Full Service', 'Complete interior and exterior cleaning', 59.99, 90);
+### ✅ Record Keeping System
+- **Customer History View** - Tracks all customer visits, completed services, and total spending
+- **Service Records View** - Detailed logs of all completed services with timestamps
+- **Daily Statistics View** - Business metrics per day (revenue, bookings, etc.)
+- **Audit Trail** - Queue history table logs all booking status changes
+
+### ✅ Booking & Payment Workflow
+- **Multi-step Booking Form** - Service selection, date/time slot, vehicle info, contact details
+- **Offline Payment Methods** - Mobile money, bank transfer, cash
+- **Booking Number Generation** - Unique identifier (e.g., CW202501011234)
+- **Payment Verification** - Admin verifies payment and converts booking to slot
+- **Status Progression**: pending_payment → payment_verified → in_queue → in_progress → completed
+
+### ✅ Queue Management
+- **Real-time Updates** - Socket.io broadcasts queue changes instantly
+- **Slot Assignment** - Automatic slot numbering upon payment verification
+- **Estimated Completion Times** - Calculated based on service duration
+- **Queue Display** - Live view of current and upcoming bookings
+
+### ✅ Navigation System
+- **Pickup Service** - Customers can request pickup with custom addresses
+- **Google Maps Integration** - Drag-and-drop location picker
+- **Directions Link** - Direct Google Maps link to car wash location
+- **Location API** - Get car wash location details and coordinates
+
+### ✅ Admin Dashboard
+**Tabs:**
+1. **Pending Payments** - Bookings awaiting payment verification
+2. **Queue** - Active bookings in service queue
+3. **Records** - Customer history and service records
+4. **Statistics** - Overall stats and daily metrics
+
+**Features:**
+- Verify offline payments manually
+- Update booking status (start service, mark complete)
+- View customer history and repeat customers
+- Track revenue and booking statistics
+- Real-time queue updates via WebSocket
+
+## Admin Panel Login
+
+1. Navigate to http://localhost:5173/admin/login
+2. Login credentials:
+   - Username: `admin`
+   - Password: `admin123`
+
+**⚠️ Change the default password in production!**
+
+## Booking Flow
+
+### Customer Journey:
+1. **Select Service** - Choose from available services (Saloon, SUV, Van, Carpet)
+2. **Choose Date & Time** - Pick available slot
+3. **Vehicle Details** - Enter model and license plate
+4. **Pickup Option** - Choose pickup service or bring car
+5. **Contact & Payment** - Enter details and see payment methods
+6. **Get Booking Number** - System generates unique booking number
+7. **Make Payment** - Offline payment (mobile money, bank, cash)
+8. **Wait for Verification** - Admin verifies payment
+9. **Get Slot Number** - Booking confirmed and added to queue
+10. **Track Status** - Check booking status in real-time
+
+### Admin Actions:
+1. **View Pending Payments** - See all unpaid bookings
+2. **Verify Payment** - Confirm payment manually
+3. **Assign Slot** - Slot number auto-assigned
+4. **Update Queue** - Start service, mark complete
+5. **View Records** - Check customer history and statistics
+
+## API Endpoints
+
+### Public Endpoints
+- `GET /api/services` - List all services
+- `GET /api/slots?date=&serviceId=` - Get available time slots
+- `GET /api/slots/location` - Get car wash location
+- `POST /api/bookings` - Create new booking
+- `GET /api/bookings/search?bookingNumber=&phone=` - Search booking
+
+### Admin Endpoints (Requires Auth)
+- `POST /api/auth/login` - Admin login
+- `GET /api/admin/pending-payments` - Pending verifications
+- `POST /api/admin/verify-payment` - Verify payment
+- `GET /api/admin/queue` - Service queue
+- `PUT /api/admin/update-status` - Change booking status
+
+### Records & Statistics
+- `GET /api/admin/records/customers` - Customer history
+- `GET /api/admin/records/services` - Service records
+- `GET /api/admin/records/customer/:phone` - Customer's bookings
+- `GET /api/admin/stats/daily?days=30` - Daily statistics
+- `GET /api/admin/stats/overall` - Overall stats
+
+## Real-time Features
+
+The system uses Socket.io for real-time updates:
+- Queue automatically updates when bookings change status
+- Admin dashboard receives live notifications
+- No page refresh needed
+
+## Production Deployment
+
+### Build
+```bash
+npm run build
 ```
+
+### Backend
+```bash
+cd backend
+npm start
+```
+
+### Frontend
+```bash
+cd frontend
+npm run preview
+```
+
+### Important Production Checklist
+- [ ] Change admin password
+- [ ] Use strong JWT_SECRET
+- [ ] Enable HTTPS
+- [ ] Set proper CORS origins
+- [ ] Configure production database
+- [ ] Set NODE_ENV=production
+- [ ] Enable rate limiting
+- [ ] Set up backups
+- [ ] Configure Google Maps API restrictions
 
 ## Troubleshooting
 
-### Database Connection Error
-- Check credentials in `config.php`
-- Verify MySQL is running
+### Database Connection Issues
+- Verify PostgreSQL is running
+- Check `.env` credentials
 - Ensure database exists
 
-### File Upload Not Working
-- Check directory permissions
-- Verify PHP upload settings
-- Check file size limits
+### Socket.io Not Working
+- Check CORS settings in backend
+- Verify FRONTEND_URL in .env
+- Check browser console for errors
 
-### API Not Responding
-- Check PHP error logs
-- Verify file paths
-- Ensure database connection works
+### Google Maps Not Loading
+- Verify API key is set
+- Check API key restrictions in Google Cloud Console
+- Enable Maps JavaScript API and Places API
+
+### Port Already in Use
+- Change PORT in backend/.env
+- Update VITE_API_URL in frontend/.env
+- Or stop process using the port
 
 ## Support
 
-For help, contact:
-- Email: contact@copperwaywash.com
-- Phone: +260 123 456789
-
-## Next Steps
-
-1. Change admin password
-2. Update business hours
-3. Add your services
-4. Update location coordinates
-5. Test booking flow
-6. Train staff on admin dashboard
+For issues or questions:
+- Check README.md for API documentation
+- Review database schema in backend/src/config/schema.ts
+- Check logs in console during development
 
